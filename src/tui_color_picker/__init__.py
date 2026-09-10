@@ -1,2 +1,9 @@
+"""tui-color-picker package."""
+
+from .cli import app
+
 def main() -> None:
-    print("Hello from tui-color-picker!")
+    """CLI entrypoint."""
+    app()
+
+__all__ = ["app", "main"]
