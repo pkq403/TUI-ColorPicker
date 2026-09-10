@@ -1,0 +1,27 @@
+[project]
+name = "tui-color-picker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "pkq403", email = "pedrocastrocutillas@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "coloraide>=3.0",
+    "pyperclip>=1.8.2",
+    "textual>=0.80.0",
+    "typer>=0.12.0",
+]
+
+[project.scripts]
+tui-color-picker = "tui_color_picker:main"
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
