@@ -51,6 +51,7 @@ class ColorCanvas(Widget):
         width: 32;
         height: 16;
         border: solid $accent;
+        pointer: default;
     }
     ColorCanvas:focus {
         border: double $primary;
@@ -58,6 +59,7 @@ class ColorCanvas(Widget):
     """
 
     can_focus = True
+    ALLOW_SELECT = False
 
     class Changed(Message):
         """Emitted when the user changes the saturation or value."""

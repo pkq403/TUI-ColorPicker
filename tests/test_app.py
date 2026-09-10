@@ -1,7 +1,13 @@
 import pytest
 from textual.widgets import Input
 from tui_color_picker.tui.app import ColorPickerApp
-from tui_color_picker.tui.widgets import ColorCanvas, ColorInputPanel, FormatCard
+from tui_color_picker.tui.widgets import (
+    ColorCanvas,
+    ColorInputPanel,
+    FormatCard,
+    HueBar,
+    AlphaBar,
+)
 
 
 @pytest.mark.asyncio
@@ -114,4 +120,34 @@ async def test_app_terminal_resize_resilience():
         await pilot.resize_terminal(110, 35)
         assert "compact" not in app.screen.classes
         assert "too-small" not in app.screen.classes
+
+
+@pytest.mark.asyncio
+async def test_app_pointer_shape_never_changes_to_text():
+    """Verify that clicking and dragging in the app keeps the pointer as default and does not enter text insert mode."""
+    app = ColorPickerApp()
+    async with app.run_test(size=(120, 35)) as pilot:
+        assert app.ALLOW_SELECT is False
+
+        # 1. Click and drag on canvas
+        await pilot.mouse_down(ColorCanvas, offset=(5, 5))
+        await pilot.hover(ColorCanvas, offset=(15, 10))
+        assert app.screen._selecting is False
+        assert app.screen._pointer_shape != "text"
+        await pilot.mouse_up()
+
+        # 2. Click and drag on HueBar
+        await pilot.mouse_down(HueBar, offset=(2, 3))
+        await pilot.hover(HueBar, offset=(2, 8))
+        assert app.screen._selecting is False
+        assert app.screen._pointer_shape != "text"
+        await pilot.mouse_up()
+
+        # 3. Click and drag on AlphaBar
+        await pilot.mouse_down(AlphaBar, offset=(5, 1))
+        await pilot.hover(AlphaBar, offset=(20, 1))
+        assert app.screen._selecting is False
+        assert app.screen._pointer_shape != "text"
+        await pilot.mouse_up()
+
 

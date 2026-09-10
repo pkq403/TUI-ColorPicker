@@ -30,6 +30,8 @@ from tui_color_picker.tui.widgets import (
 class ColorPickerApp(App[Optional[str]]):
     """Interactive TrueColor TUI Color Picker."""
 
+    ALLOW_SELECT = False
+
     TITLE = "🎨 TUI Color Picker"
     SUB_TITLE = "HEX • RGBA • OKLCH"
 
@@ -38,6 +40,7 @@ class ColorPickerApp(App[Optional[str]]):
         background: $background;
         overflow: hidden;
         align: center middle;
+        pointer: default;
     }
 
     #size_warning {

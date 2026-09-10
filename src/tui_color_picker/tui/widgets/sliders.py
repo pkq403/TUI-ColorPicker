@@ -21,6 +21,7 @@ class HueBar(Widget):
         height: 16;
         border: solid $accent;
         margin-left: 1;
+        pointer: default;
     }
     HueBar:focus {
         border: double $primary;
@@ -28,6 +29,7 @@ class HueBar(Widget):
     """
 
     can_focus = True
+    ALLOW_SELECT = False
 
     class Changed(Message):
         """Emitted when the user changes the hue."""
@@ -130,6 +132,7 @@ class AlphaBar(Widget):
         height: 4;
         border: solid $accent;
         margin-top: 1;
+        pointer: default;
     }
     AlphaBar:focus {
         border: double $primary;
@@ -137,6 +140,7 @@ class AlphaBar(Widget):
     """
 
     can_focus = True
+    ALLOW_SELECT = False
 
     class Changed(Message):
         """Emitted when the user changes the alpha value."""
