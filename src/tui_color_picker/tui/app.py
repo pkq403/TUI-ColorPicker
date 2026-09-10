@@ -62,7 +62,7 @@ class ColorPickerApp(App[Optional[str]]):
         margin-top: 1;
         color: $text-muted;
         text-align: center;
-        width: 36;
+        width: 38;
     }
 
     #right_column {

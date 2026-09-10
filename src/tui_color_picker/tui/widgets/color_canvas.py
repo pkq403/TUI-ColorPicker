@@ -147,8 +147,11 @@ class ColorCanvas(Widget):
         width = max(8, self.content_size.width or 30)
         height = max(4, self.content_size.height or 14)
 
-        clamped_x = max(0, min(width - 1, x))
-        clamped_y = max(0, min(height - 1, y))
+        content_x = x - (self.content_region.x if hasattr(self, "content_region") else 0)
+        content_y = y - (self.content_region.y if hasattr(self, "content_region") else 0)
+
+        clamped_x = max(0, min(width - 1, content_x))
+        clamped_y = max(0, min(height - 1, content_y))
 
         new_s = clamped_x / float(width - 1) if width > 1 else 0.0
         # Character row maps to value (center of cell)
@@ -171,9 +174,9 @@ class ColorCanvas(Widget):
 
     def on_mouse_up(self, event: events.MouseUp) -> None:
         if self._is_dragging:
+            self._update_from_mouse(event.x, event.y)
             self._is_dragging = False
             self.release_mouse()
-            self._update_from_mouse(event.x, event.y)
 
     def on_key(self, event: events.Key) -> None:
         step = 0.08 if "shift" in event.key else 0.02

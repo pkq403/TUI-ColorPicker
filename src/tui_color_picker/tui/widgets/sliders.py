@@ -17,12 +17,13 @@ class HueBar(Widget):
 
     DEFAULT_CSS = """
     HueBar {
-        width: 3;
+        width: 5;
         height: 16;
+        border: solid $accent;
         margin-left: 1;
     }
     HueBar:focus {
-        border: heavy $primary;
+        border: double $primary;
     }
     """
 
@@ -66,7 +67,7 @@ class HueBar(Widget):
             r_bot, g_bot, b_bot = _hsv_to_rgb(h_bot, 1.0, 1.0)
 
             style = Style(
-                color=f"rgb({r_top},{g_top},{b_top})",
+                color=f"rgb({r_top},{g_top},{b_bot})",
                 bgcolor=f"rgb({r_bot},{g_bot},{b_bot})",
             )
             result.append("▀▀", style=style)
@@ -84,7 +85,8 @@ class HueBar(Widget):
 
     def _update_from_mouse(self, y: int) -> None:
         height = max(4, self.content_size.height or 14)
-        clamped_y = max(0, min(height - 1, y))
+        content_y = y - (self.content_region.y if hasattr(self, "content_region") else 0)
+        clamped_y = max(0, min(height - 1, content_y))
         new_hue = (clamped_y / float(height - 1)) * 360.0 if height > 1 else 0.0
         self.hue = round(new_hue, 1)
         self.post_message(self.Changed(self.hue))
@@ -124,12 +126,13 @@ class AlphaBar(Widget):
 
     DEFAULT_CSS = """
     AlphaBar {
-        width: 32;
-        height: 2;
+        width: 38;
+        height: 4;
+        border: solid $accent;
         margin-top: 1;
     }
     AlphaBar:focus {
-        border: heavy $primary;
+        border: double $primary;
     }
     """
 
@@ -161,7 +164,7 @@ class AlphaBar(Widget):
         self.rgb = rgb
 
     def render(self) -> Text:
-        width = max(8, self.content_size.width or 30)
+        width = max(8, self.content_size.width or 36)
         result = Text()
 
         # Row 0: Alpha gradient bar with checkered background blend
@@ -187,8 +190,9 @@ class AlphaBar(Widget):
         return result
 
     def _update_from_mouse(self, x: int) -> None:
-        width = max(8, self.content_size.width or 30)
-        clamped_x = max(0, min(width - 1, x))
+        width = max(8, self.content_size.width or 36)
+        content_x = x - (self.content_region.x if hasattr(self, "content_region") else 0)
+        clamped_x = max(0, min(width - 1, content_x))
         new_alpha = clamped_x / float(width - 1) if width > 1 else 1.0
         self.alpha = round(new_alpha, 2)
         self.post_message(self.Changed(self.alpha))
@@ -205,9 +209,9 @@ class AlphaBar(Widget):
 
     def on_mouse_up(self, event: events.MouseUp) -> None:
         if self._is_dragging:
+            self._update_from_mouse(event.x)
             self._is_dragging = False
             self.release_mouse()
-            self._update_from_mouse(event.x)
 
     def on_key(self, event: events.Key) -> None:
         step = 0.10 if "shift" in event.key else 0.02

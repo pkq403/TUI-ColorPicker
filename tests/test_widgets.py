@@ -61,3 +61,39 @@ async def test_alpha_bar_interactions():
 
         await pilot.click(AlphaBar, offset=(5, 0))
         assert 0.0 <= alpha_bar.alpha <= 1.0
+
+
+@pytest.mark.asyncio
+async def test_slider_focus_stability():
+    """Ensure clicking/focusing HueBar and AlphaBar preserves content size without bugging or crushing."""
+    app = WidgetTestApp()
+    async with app.run_test() as pilot:
+        canvas = app.query_one("#canvas", ColorCanvas)
+        hue_bar = app.query_one("#hue_bar", HueBar)
+        alpha_bar = app.query_one("#alpha_bar", AlphaBar)
+
+        # 1. Focus HueBar (simulating mouse press on HueBar)
+        hue_bar.focus()
+        await pilot.pause()
+        assert hue_bar.content_size.width >= 3
+        assert hue_bar.content_size.height >= 10
+        # Check that render produces valid non-empty lines
+        rendered_hue = hue_bar.render()
+        assert len(rendered_hue.plain.splitlines()) >= 10
+
+        # 2. Focus AlphaBar (simulating mouse press on AlphaBar)
+        alpha_bar.focus()
+        await pilot.pause()
+        assert alpha_bar.content_size.width >= 20
+        assert alpha_bar.content_size.height >= 2
+        # Check that render produces 2 distinct lines (gradient and pointer)
+        rendered_alpha = alpha_bar.render()
+        lines = rendered_alpha.plain.splitlines()
+        assert len(lines) == 2
+        assert "▲" in lines[1]
+
+        # 3. Focus back on ColorCanvas
+        canvas.focus()
+        await pilot.pause()
+        assert hue_bar.content_size.width >= 3
+        assert alpha_bar.content_size.height >= 2
