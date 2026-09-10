@@ -84,3 +84,34 @@ async def test_app_exit_cancel():
     async with app.run_test() as pilot:
         await pilot.press("escape")
         assert app.return_value is None
+
+
+@pytest.mark.asyncio
+async def test_app_terminal_resize_resilience():
+    """Verify that resizing the terminal dynamically adapts between wide, compact, and warning modes."""
+    app = ColorPickerApp(initial_color_str="#6366f1")
+    async with app.run_test(size=(120, 35)) as pilot:
+        # 1. Wide terminal mode
+        assert "compact" not in app.screen.classes
+        assert "too-small" not in app.screen.classes
+
+        # 2. Resize to standard 80x24 terminal
+        await pilot.resize_terminal(80, 24)
+        assert "compact" in app.screen.classes
+        assert "too-small" not in app.screen.classes
+
+        # Verify interaction in compact mode
+        canvas = app.query_one("#canvas", ColorCanvas)
+        canvas.focus()
+        await pilot.press("right")
+        assert app.current_color.s > 0.0
+
+        # 3. Resize to micro terminal (too small)
+        await pilot.resize_terminal(32, 10)
+        assert "too-small" in app.screen.classes
+
+        # 4. Resize back to wide
+        await pilot.resize_terminal(110, 35)
+        assert "compact" not in app.screen.classes
+        assert "too-small" not in app.screen.classes
+
