@@ -147,8 +147,8 @@ class ColorCanvas(Widget):
         width = max(8, self.content_size.width or 30)
         height = max(4, self.content_size.height or 14)
 
-        content_x = x - (self.content_region.x if hasattr(self, "content_region") else 0)
-        content_y = y - (self.content_region.y if hasattr(self, "content_region") else 0)
+        content_x = x - (self.gutter.left if hasattr(self, "gutter") else 0)
+        content_y = y - (self.gutter.top if hasattr(self, "gutter") else 0)
 
         clamped_x = max(0, min(width - 1, content_x))
         clamped_y = max(0, min(height - 1, content_y))

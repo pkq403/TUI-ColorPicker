@@ -85,7 +85,7 @@ class HueBar(Widget):
 
     def _update_from_mouse(self, y: int) -> None:
         height = max(4, self.content_size.height or 14)
-        content_y = y - (self.content_region.y if hasattr(self, "content_region") else 0)
+        content_y = y - (self.gutter.top if hasattr(self, "gutter") else 0)
         clamped_y = max(0, min(height - 1, content_y))
         new_hue = (clamped_y / float(height - 1)) * 360.0 if height > 1 else 0.0
         self.hue = round(new_hue, 1)
@@ -191,7 +191,7 @@ class AlphaBar(Widget):
 
     def _update_from_mouse(self, x: int) -> None:
         width = max(8, self.content_size.width or 36)
-        content_x = x - (self.content_region.x if hasattr(self, "content_region") else 0)
+        content_x = x - (self.gutter.left if hasattr(self, "gutter") else 0)
         clamped_x = max(0, min(width - 1, content_x))
         new_alpha = clamped_x / float(width - 1) if width > 1 else 1.0
         self.alpha = round(new_alpha, 2)

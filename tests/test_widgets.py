@@ -97,3 +97,57 @@ async def test_slider_focus_stability():
         await pilot.pause()
         assert hue_bar.content_size.width >= 3
         assert alpha_bar.content_size.height >= 2
+
+
+@pytest.mark.asyncio
+async def test_mouse_click_accuracy_with_screen_offset():
+    """Verify that clicks are not offset when widgets are placed at non-zero screen coordinates."""
+    class CenteredApp(App):
+        CSS = "Screen { align: center middle; }"
+        def compose(self) -> ComposeResult:
+            yield ColorCanvas(id="canvas")
+            yield HueBar(id="hue_bar")
+            yield AlphaBar(id="alpha_bar")
+
+    app = CenteredApp()
+    async with app.run_test(size=(120, 40)) as pilot:
+        canvas = app.query_one("#canvas", ColorCanvas)
+        hue_bar = app.query_one("#hue_bar", HueBar)
+        alpha_bar = app.query_one("#alpha_bar", AlphaBar)
+
+        # Confirm that the canvas is centered on screen (screen X > 20, screen Y > 5)
+        assert canvas.region.x > 20
+        assert canvas.region.y > 0
+
+        # Click top-left content cell (offset 1, 1 due to 1-char border)
+        # Should select S=0.0 and high V
+        await pilot.click(ColorCanvas, offset=(1, 1))
+        assert canvas.saturation == 0.0
+        assert canvas.value > 0.9
+
+        # Click bottom-right content cell (offset 30, 14)
+        # Should select S=1.0 and low V
+        await pilot.click(ColorCanvas, offset=(30, 14))
+        assert canvas.saturation == 1.0
+        assert canvas.value < 0.1
+
+        # Click middle content cell (offset 15, 7)
+        # Should select S ~ 0.5, V ~ 0.5
+        await pilot.click(ColorCanvas, offset=(15, 7))
+        assert 0.45 <= canvas.saturation <= 0.55
+        assert 0.45 <= canvas.value <= 0.55
+
+        # Test HueBar click accuracy (row 1 = 0°, row 14 = 360°)
+        await pilot.click(HueBar, offset=(1, 1))
+        assert hue_bar.hue == 0.0
+
+        await pilot.click(HueBar, offset=(1, 14))
+        assert hue_bar.hue == 360.0
+
+        # Test AlphaBar click accuracy (col 1 = 0.0, right-most col 36 = 1.0)
+        await pilot.click(AlphaBar, offset=(1, 1))
+        assert alpha_bar.alpha == 0.0
+
+        await pilot.click(AlphaBar, offset=(36, 1))
+        assert alpha_bar.alpha == 1.0
+
