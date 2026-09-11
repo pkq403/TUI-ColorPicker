@@ -1,6 +1,8 @@
-# 🎨 TUI Color Picker (`tui-color-picker`)
+# 🎨 TUI Color Picker (`color-picker`)
 
-A terminal-based color picker built with Python, driven by the **`uv`** package manager. Features an interactive 2D color palette square rendered with TrueColor half-blocks, Hue and Alpha sliders, live bidirectional synchronization with a smart multi-format input (Hex, RGBA, OKLCH), WCAG contrast checks, and a Typer CLI interface.
+A terminal-based color picker built with Python. Features an interactive 2D color palette square rendered with TrueColor half-blocks, Hue and Alpha sliders, live bidirectional synchronization with a smart multi-format input (Hex, RGBA, OKLCH, HSL), WCAG contrast checks, and a fast CLI interface.
+
+Once installed, simply type **`color-picker`** in your Linux terminal to launch!
 
 ---
 
@@ -27,52 +29,130 @@ A terminal-based color picker built with Python, driven by the **`uv`** package 
   - **WCAG 2.1 Contrast Analysis**: Live contrast ratios against `#000000` and `#ffffff` with `[AA Pass]`, `[AAA Pass]`, or `[Fail]` badges.
   - **Recent Color History**: Click any recent swatch to restore that color.
 - **CLI & Shell Pipeline Integration**:
-  - Built with **Typer**: clean flags, help menus, and exit codes.
+  - Direct execution via `color-picker` (alias `tui-color-picker` also provided).
+  - Clean flags, help menus, and exit codes.
   - Pressing `Enter` confirms selection, copies the color to clipboard, and prints it to `stdout`.
   - Non-interactive `convert` command for fast headless conversions.
 
 ---
 
-## 🚀 Installation & Quick Start
+## 🚀 Installation on Linux
 
-Requires Python 3.13+ and [`uv`](https://docs.astral.sh/uv/).
+Requires **Python 3.13+**.
 
-### Run directly with `uvx` or `uv run`:
+### Option 1: One-Command Installer Script (Recommended)
+
+From the project root, run the installer:
+
 ```bash
-# Launch interactive color picker
-uv run tui-color-picker
+./install.sh
+# or using Make:
+make install
+```
+
+The script automatically detects whether you have [`uv`](https://docs.astral.sh/uv/), [`pipx`](https://pypa.github.io/pipx/), or standard `python3`, and installs `color-picker` into `~/.local/bin`.
+
+### Option 2: Using `uv`
+
+If you use `uv`:
+
+```bash
+uv tool install .
+```
+
+### Option 3: Using `pipx`
+
+If you use `pipx`:
+
+```bash
+pipx install .
+```
+
+### 📌 Ensure `~/.local/bin` is in your `PATH`
+
+On most Linux distributions, `~/.local/bin` is already in your `$PATH`. If running `color-picker` says "command not found", add it to your shell configuration:
+
+```bash
+# For Bash (~/.bashrc):
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# For Zsh (~/.zshrc):
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 🗑️ Uninstalling
+
+To uninstall at any time:
+
+```bash
+./install.sh --uninstall
+# or
+make uninstall
+# or (if installed with uv)
+uv tool uninstall tui-color-picker
+```
+
+---
+
+## 💻 Quick Start & Usage
+
+Once installed, run `color-picker` directly in your terminal:
+
+```bash
+# Launch interactive color picker with default color
+color-picker
 
 # Launch with a specific starting color
-uv run tui-color-picker pick "#e11d48"
+color-picker pick "#e11d48"
 
-# Or with OKLCH:
-uv run tui-color-picker pick "oklch(0.7 0.15 180)"
+# Launch with OKLCH format
+color-picker pick "oklch(0.7 0.15 180)"
+
+# Launch specifying output format
+color-picker --format oklch
+```
+
+*(Note: `tui-color-picker` can also be typed as an alternate command name.)*
+
+### Run Without Installing
+
+You can also run it directly without installing via `uv`:
+
+```bash
+uv run color-picker
 ```
 
 ### Shell Pipeline Usage
+
 Capture the picked color directly into shell variables or pipelines:
+
 ```bash
 # Capture selected hex into a shell variable
-COLOR=$(uv run tui-color-picker)
+COLOR=$(color-picker)
 echo "You selected: $COLOR"
 
 # Pick directly in OKLCH format
-OKLCH_COLOR=$(uv run tui-color-picker --format oklch)
+OKLCH_COLOR=$(color-picker --format oklch)
 echo "OKLCH: $OKLCH_COLOR"
 ```
 
 ### Headless Conversion
+
+Convert color formats directly from the command line without opening the TUI:
+
 ```bash
 # Convert OKLCH to Hex
-uv run tui-color-picker convert "oklch(0.7 0.15 180)" --to hex
+color-picker convert "oklch(0.7 0.15 180)" --to hex
 # Output: #00b8a1
 
 # Convert Hex to OKLCH
-uv run tui-color-picker convert "#ff0080" --to oklch
+color-picker convert "#ff0080" --to oklch
 # Output: oklch(0.645 0.26 2.5)
 
 # Convert RGBA to HSL
-uv run tui-color-picker convert "rgba(255, 0, 128, 0.5)" --to hsl
+color-picker convert "rgba(255, 0, 128, 0.5)" --to hsl
 # Output: hsla(330, 100%, 50%, 0.5)
 ```
 
@@ -97,6 +177,9 @@ uv run tui-color-picker convert "rgba(255, 0, 128, 0.5)" --to hsl
 ## 🧪 Testing
 
 Run the test suite with `pytest`:
+
 ```bash
 uv run pytest
+# or
+make test
 ```

@@ -1,7 +1,7 @@
 [project]
 name = "tui-color-picker"
 version = "0.1.0"
-description = "Add your description here"
+description = "Interactive terminal TrueColor color picker with Hex, RGBA, and OKLCH support"
 readme = "README.md"
 authors = [
     { name = "pkq403", email = "pedrocastrocutillas@gmail.com" }
@@ -15,6 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
+color-picker = "tui_color_picker:main"
 tui-color-picker = "tui_color_picker:main"
 
 [build-system]

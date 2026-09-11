@@ -41,3 +41,13 @@ def test_cli_convert_invalid():
     result = runner.invoke(app, ["convert", "not-a-color"])
     assert result.exit_code != 0
     assert "Error:" in result.output
+
+
+def test_entrypoint_main(monkeypatch):
+    from tui_color_picker import main
+
+    monkeypatch.setattr("sys.argv", ["color-picker", "--version"])
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+    assert exc_info.value.code == 0
+
