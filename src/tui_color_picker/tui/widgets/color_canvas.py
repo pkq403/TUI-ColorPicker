@@ -40,12 +40,6 @@ def _hsv_to_rgb(h: float, s: float, v: float) -> tuple[int, int, int]:
 
 
 class ColorCanvas(Widget):
-    """2D Color Palette Square widget (Saturation on X, Value on Y).
-
-    Uses upper half-block characters (▀) with independent foreground and background
-    colors to double the vertical resolution and achieve a crisp, square aspect ratio.
-    """
-
     DEFAULT_CSS = """
     ColorCanvas {
         width: 32;
@@ -152,14 +146,11 @@ class ColorCanvas(Widget):
         content_x = x - (self.gutter.left if hasattr(self, "gutter") else 0)
         content_y = y - (self.gutter.top if hasattr(self, "gutter") else 0)
 
-        clamped_x = max(0, min(width - 1, content_x))
+        clamped_x = max(1, min(width - 1, content_x))
         clamped_y = max(0, min(height - 1, content_y))
 
         new_s = clamped_x / float(width - 1) if width > 1 else 0.0
-        # Character row maps to value (center of cell)
-        sub_y = clamped_y * 2 + 0.5
-        new_v = max(0.0, min(1.0, 1.0 - sub_y / float(height * 2 - 1)))
-
+        new_v = 1.0 - (clamped_y / float(height - 1)) if height > 1 else 1.0
         self.saturation = round(new_s, 3)
         self.value = round(new_v, 3)
         self.post_message(self.Changed(self.saturation, self.value))
